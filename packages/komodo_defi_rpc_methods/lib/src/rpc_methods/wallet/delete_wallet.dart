@@ -3,9 +3,8 @@ import 'package:komodo_defi_types/komodo_defi_type_utils.dart';
 
 /// Request to delete a wallet.
 ///
-/// Known errors may surface either as typed [MmRpcException] subclasses
-/// from the [KdfErrorRegistry] or as a [GeneralErrorResponse] fallback.
-/// Common error types include:
+/// Errors are automatically parsed into typed [MmRpcException] subclasses
+/// by the [KdfErrorRegistry]. Common error types include:
 /// - `InvalidRequest` - The request was malformed
 /// - `WalletNotFound` - The specified wallet does not exist
 /// - `InvalidPassword` - The provided password is incorrect

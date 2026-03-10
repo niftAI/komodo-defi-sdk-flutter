@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import argparse
-from collections import Counter
 import json
 import os
 import re
@@ -1138,29 +1137,17 @@ def generate_lines(enums: list[dict], mm2_repo_root: Path) -> list[str]:
     lines.append("import 'package:komodo_defi_types/komodo_defi_type_utils.dart';")
     lines.append("")
     lines.append("int _intFromJson(dynamic value) {")
-    lines.append("  if (value is int) {")
-    lines.append("    return value;")
-    lines.append("  }")
-    lines.append("  if (value is num) {")
-    lines.append("    return value.toInt();")
-    lines.append("  }")
-    lines.append("  if (value is String) {")
-    lines.append("    return int.parse(value);")
-    lines.append("  }")
-    lines.append("  throw ArgumentError('Invalid int value: $value');")
+    lines.append("  if (value is int) return value;")
+    lines.append("  if (value is num) return value.toInt();")
+    lines.append("  if (value is String) return int.tryParse(value) ?? 0;")
+    lines.append("  return 0;")
     lines.append("}")
     lines.append("")
     lines.append("double _doubleFromJson(dynamic value) {")
-    lines.append("  if (value is double) {")
-    lines.append("    return value;")
-    lines.append("  }")
-    lines.append("  if (value is num) {")
-    lines.append("    return value.toDouble();")
-    lines.append("  }")
-    lines.append("  if (value is String) {")
-    lines.append("    return double.parse(value);")
-    lines.append("  }")
-    lines.append("  throw ArgumentError('Invalid double value: $value');")
+    lines.append("  if (value is double) return value;")
+    lines.append("  if (value is num) return value.toDouble();")
+    lines.append("  if (value is String) return double.tryParse(value) ?? 0;")
+    lines.append("  return 0;")
     lines.append("}")
     lines.append("")
     lines.append("String _stringFromJson(dynamic value) {")
@@ -1213,7 +1200,7 @@ def generate_lines(enums: list[dict], mm2_repo_root: Path) -> list[str]:
             lines.append("    if (json is int || json is num || json is String) {")
             lines.append("      return Mm2Duration(Duration(seconds: _intFromJson(json)));")
             lines.append("    }")
-            lines.append("    throw ArgumentError('Invalid duration value: $json');")
+            lines.append("    return const Mm2Duration(Duration.zero);")
             lines.append("  }")
             lines.append("")
             lines.append("  final Duration value;")
@@ -1863,7 +1850,7 @@ def generate_lines(enums: list[dict], mm2_repo_root: Path) -> list[str]:
     lines.append("")
     lines.append("  @override")
     lines.append(
-        "  String toString() => 'MmRpcException(type: $errorType, message: $message, path: $path)';"
+        r"  String toString() => 'MmRpcException(type: ' '\$errorType, message: \$message, path: \$path)';"
     )
     lines.append("}")
     lines.append("")
@@ -2102,20 +2089,6 @@ def generate_lines(enums: list[dict], mm2_repo_root: Path) -> list[str]:
                 lines.append("")
                 emitted_extra_classes.add(class_name)
 
-    variant_type_counts = Counter(
-        (
-            variant.get("serde_rename") or variant["name"]
-        )
-        for enum in enums
-        for variant in enum["variants"]
-        if not variant.get("serde_other")
-    )
-    ambiguous_error_types = sorted(
-        error_type
-        for error_type, count in variant_type_counts.items()
-        if count > 1
-    )
-
     # Generate KdfErrorRegistry class for automatic error parsing
     lines.append("/// Registry for parsing KDF RPC error responses into typed exceptions.")
     lines.append("///")
@@ -2139,7 +2112,6 @@ def generate_lines(enums: list[dict], mm2_repo_root: Path) -> list[str]:
     lines.append("  static MmRpcException? tryParse(JsonMap json) {")
     lines.append("    final errorType = json['error_type'] as String?;")
     lines.append("    if (errorType == null) return null;")
-    lines.append("    if (_ambiguousErrorTypes.contains(errorType)) return null;")
     lines.append("")
     lines.append("    final errorData = json['error_data'];")
     lines.append("    final message = json['error'] as String? ?? json['message'] as String?;")
@@ -2149,7 +2121,13 @@ def generate_lines(enums: list[dict], mm2_repo_root: Path) -> list[str]:
     lines.append("    final parser = _errorParsers[errorType];")
     lines.append("    if (parser == null) return null;")
     lines.append("")
-    lines.append("    return parser(errorData, message, path, trace);")
+    lines.append("    try {")
+    lines.append("      return parser(errorData, message, path, trace);")
+    lines.append("    } catch (_) {")
+    lines.append("      // Malformed or unexpected error_data shape \u2014 fall back to null so")
+    lines.append("      // callers can degrade gracefully to GeneralErrorResponse.")
+    lines.append("      return null;")
+    lines.append("    }")
     lines.append("  }")
     lines.append("")
     lines.append("  /// Checks if the given error type string is a known KDF error type.")
@@ -2159,15 +2137,6 @@ def generate_lines(enums: list[dict], mm2_repo_root: Path) -> list[str]:
     lines.append("")
     lines.append("  /// Returns all known error type strings.")
     lines.append("  static Iterable<String> get knownErrorTypes => _errorParsers.keys;")
-    lines.append("")
-    lines.append("  /// Error types that are emitted by multiple RPC namespaces.")
-    lines.append("  ///")
-    lines.append("  /// These are intentionally excluded from automatic typed parsing")
-    lines.append("  /// because `error_type` alone is not enough to disambiguate them.")
-    lines.append("  static const Set<String> _ambiguousErrorTypes = {")
-    for error_type in ambiguous_error_types:
-        lines.append(f"    '{error_type}',")
-    lines.append("  };")
     lines.append("")
 
     # Build the error parsers map

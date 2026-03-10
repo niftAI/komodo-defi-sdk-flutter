@@ -5,8 +5,8 @@ import 'package:komodo_defi_types/komodo_defi_type_utils.dart';
 
 /// Request to change the mnemonic password.
 ///
-/// Known errors may surface either as typed [MmRpcException] subclasses
-/// from the [KdfErrorRegistry] or as a [GeneralErrorResponse] fallback.
+/// Errors are automatically parsed into typed [MmRpcException] subclasses
+/// by the [KdfErrorRegistry].
 class ChangeMnemonicPasswordRequest
     extends BaseRequest<ChangeMnemonicPasswordResponse, GeneralErrorResponse> {
   ChangeMnemonicPasswordRequest({
