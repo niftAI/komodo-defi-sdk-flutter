@@ -123,14 +123,9 @@ class FeeManager {
     String coin, {
     FeeEstimatorType estimatorType = FeeEstimatorType.simple,
   }) async {
-    try {
-      if (!_feeEstimationEnabled) {
-        throw UnsupportedError(
-          'Fee estimation is currently disabled. The API endpoints are not yet available. '
-          'Set `_feeEstimationEnabled` to `true` when the endpoints become available.',
-        );
-      }
+    _throwIfFeeEstimationDisabled();
 
+    try {
       final response = await _client.rpc.feeManagement.getEthEstimatedFeePerGas(
         coin: coin,
         estimatorType: estimatorType,
@@ -180,14 +175,9 @@ class FeeManager {
     String coin, {
     FeeEstimatorType estimatorType = FeeEstimatorType.simple,
   }) async {
-    try {
-      if (!_feeEstimationEnabled) {
-        throw UnsupportedError(
-          'Fee estimation is currently disabled. The API endpoints are not yet available. '
-          'Set `_feeEstimationEnabled` to `true` when the endpoints become available.',
-        );
-      }
+    _throwIfFeeEstimationDisabled();
 
+    try {
       final response = await _client.rpc.feeManagement.getUtxoEstimatedFee(
         coin: coin,
         estimatorType: estimatorType,
@@ -241,14 +231,9 @@ class FeeManager {
     String coin, {
     FeeEstimatorType estimatorType = FeeEstimatorType.simple,
   }) async {
-    try {
-      if (!_feeEstimationEnabled) {
-        throw UnsupportedError(
-          'Fee estimation is currently disabled. The API endpoints are not yet available. '
-          'Set `_feeEstimationEnabled` to `true` when the endpoints become available.',
-        );
-      }
+    _throwIfFeeEstimationDisabled();
 
+    try {
       final response = await _client.rpc.feeManagement
           .getTendermintEstimatedFee(coin: coin, estimatorType: estimatorType);
       return response.result;
@@ -328,6 +313,15 @@ class FeeManager {
     return _errorMapper.map(
       error,
       context: SdkErrorContext(operation: operation, assetId: assetId),
+    );
+  }
+
+  void _throwIfFeeEstimationDisabled() {
+    if (_feeEstimationEnabled) return;
+
+    throw UnsupportedError(
+      'Fee estimation is currently disabled. The API endpoints are not yet available. '
+      'Set `_feeEstimationEnabled` to `true` when the endpoints become available.',
     );
   }
 

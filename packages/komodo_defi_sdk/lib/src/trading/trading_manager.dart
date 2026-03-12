@@ -58,17 +58,27 @@ class TradingManager {
     Timer? pollingTimer;
     DateTime? lastStreamUpdateAt;
     var fetchInProgress = false;
+    var isCancelled = false;
+
+    bool canEmit() => !isCancelled && !controller.isClosed;
+
+    Future<void> tearDownResources() async {
+      pollingTimer?.cancel();
+      pollingTimer = null;
+      await streamSubscription?.cancel();
+      streamSubscription = null;
+    }
 
     Future<void> emitSnapshot() async {
-      if (fetchInProgress || controller.isClosed) return;
+      if (fetchInProgress || !canEmit()) return;
       fetchInProgress = true;
       try {
         final snapshot = await getOrderbook(base: base, rel: rel);
-        if (!controller.isClosed) {
+        if (canEmit()) {
           controller.add(snapshot);
         }
       } on Object catch (e, s) {
-        if (!controller.isClosed) {
+        if (canEmit()) {
           controller.addError(e, s);
         }
       } finally {
@@ -78,31 +88,41 @@ class TradingManager {
 
     Future<void> start() async {
       await emitSnapshot();
+      if (!canEmit()) return;
 
       try {
-        streamSubscription =
-            (await _eventStreamingManager.subscribeToOrderbook(
-                base: base,
-                rel: rel,
-              ))
-              ..onData((event) {
-                lastStreamUpdateAt = DateTime.now();
-                if (!controller.isClosed) {
-                  controller.add(_mapOrderbookEventToResponse(event));
-                }
-              })
-              ..onError((Object error, StackTrace trace) {
-                if (!controller.isClosed) {
-                  controller.addError(error, trace);
-                }
-              });
+        final subscription = await _eventStreamingManager.subscribeToOrderbook(
+          base: base,
+          rel: rel,
+        );
+        if (!canEmit()) {
+          await subscription.cancel();
+          return;
+        }
+
+        streamSubscription = subscription
+          ..onData((event) {
+            if (!canEmit()) return;
+            lastStreamUpdateAt = DateTime.now();
+            controller.add(_mapOrderbookEventToResponse(event));
+          })
+          ..onError((Object error, StackTrace trace) {
+            if (canEmit()) {
+              controller.addError(error, trace);
+            }
+          });
       } on Object catch (e, s) {
-        if (!controller.isClosed) {
+        if (canEmit()) {
           controller.addError(e, s);
         }
       }
+      if (!canEmit()) {
+        await tearDownResources();
+        return;
+      }
 
       pollingTimer = Timer.periodic(fallbackPollingInterval, (_) {
+        if (!canEmit()) return;
         final lastUpdateAt = lastStreamUpdateAt;
         final streamIsFresh =
             lastUpdateAt != null &&
@@ -116,8 +136,8 @@ class TradingManager {
     controller = StreamController<OrderbookResponse>(
       onListen: () => start().ignore(),
       onCancel: () async {
-        pollingTimer?.cancel();
-        await streamSubscription?.cancel();
+        isCancelled = true;
+        await tearDownResources();
       },
     );
 
@@ -147,17 +167,27 @@ class TradingManager {
     Timer? pollingTimer;
     DateTime? lastStreamUpdateAt;
     var fetchInProgress = false;
+    var isCancelled = false;
+
+    bool canEmit() => !isCancelled && !controller.isClosed;
+
+    Future<void> tearDownResources() async {
+      pollingTimer?.cancel();
+      pollingTimer = null;
+      await streamSubscription?.cancel();
+      streamSubscription = null;
+    }
 
     Future<void> emitSnapshot() async {
-      if (fetchInProgress || controller.isClosed) return;
+      if (fetchInProgress || !canEmit()) return;
       fetchInProgress = true;
       try {
         final snapshot = await getSwapStatus(uuid: uuid);
-        if (!controller.isClosed) {
+        if (canEmit()) {
           controller.add(snapshot.swapInfo);
         }
       } on Object catch (e, s) {
-        if (!controller.isClosed) {
+        if (canEmit()) {
           controller.addError(e, s);
         }
       } finally {
@@ -167,29 +197,39 @@ class TradingManager {
 
     Future<void> start() async {
       await emitSnapshot();
+      if (!canEmit()) return;
 
       try {
-        streamSubscription =
-            (await _eventStreamingManager.subscribeToSwapStatus())
-              ..onData((event) {
-                if (event.uuid != uuid) return;
-                lastStreamUpdateAt = DateTime.now();
-                if (!controller.isClosed) {
-                  controller.add(event.swapInfo);
-                }
-              })
-              ..onError((Object error, StackTrace trace) {
-                if (!controller.isClosed) {
-                  controller.addError(error, trace);
-                }
-              });
+        final subscription = await _eventStreamingManager
+            .subscribeToSwapStatus();
+        if (!canEmit()) {
+          await subscription.cancel();
+          return;
+        }
+
+        streamSubscription = subscription
+          ..onData((event) {
+            if (!canEmit() || event.uuid != uuid) return;
+            lastStreamUpdateAt = DateTime.now();
+            controller.add(event.swapInfo);
+          })
+          ..onError((Object error, StackTrace trace) {
+            if (canEmit()) {
+              controller.addError(error, trace);
+            }
+          });
       } on Object catch (e, s) {
-        if (!controller.isClosed) {
+        if (canEmit()) {
           controller.addError(e, s);
         }
       }
+      if (!canEmit()) {
+        await tearDownResources();
+        return;
+      }
 
       pollingTimer = Timer.periodic(fallbackPollingInterval, (_) {
+        if (!canEmit()) return;
         final lastUpdateAt = lastStreamUpdateAt;
         final streamIsFresh =
             lastUpdateAt != null &&
@@ -203,8 +243,8 @@ class TradingManager {
     controller = StreamController<SwapInfo>(
       onListen: () => start().ignore(),
       onCancel: () async {
-        pollingTimer?.cancel();
-        await streamSubscription?.cancel();
+        isCancelled = true;
+        await tearDownResources();
       },
     );
 
