@@ -73,7 +73,15 @@ class OrderbookMethodsNamespace extends BaseRpcMethodNamespace {
         base: base,
         rel: rel,
       ),
-    );
+    ).then((value) {
+      print(
+        '=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-='
+        'ORDERBOOK RESPONSE'
+        '${value.toJson()}'
+        '=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=',
+      );
+      return value;
+    });
   }
 
   /// Retrieves orderbook depth for multiple trading pairs.
