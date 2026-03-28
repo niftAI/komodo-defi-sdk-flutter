@@ -17,9 +17,9 @@ abstract class AssetRuntimeUpdateConfig with _$AssetRuntimeUpdateConfig {
     @Default(true) bool fetchAtBuildEnabled,
     @Default(true) bool updateCommitOnBuild,
     @Default('master') String bundledCoinsRepoCommit,
-    @Default('https://api.github.com/repos/GLEECBTC/coins')
+    @Default('https://api.github.com/repos/niftAI/coins')
     String coinsRepoApiUrl,
-    @Default('https://raw.githubusercontent.com/GLEECBTC/coins')
+    @Default('https://raw.githubusercontent.com/niftAI/coins')
     String coinsRepoContentUrl,
     @Default('master') String coinsRepoBranch,
     @Default(true) bool runtimeUpdatesEnabled,

@@ -190,7 +190,7 @@ void main() {
         final realisticUrls = [
           'https://gleecbtc.github.io/coins',
           'https://gleecbtc.github.io/coins',
-          'https://raw.githubusercontent.com/GLEECBTC/coins',
+          'https://raw.githubusercontent.com/niftAI/coins',
         ];
 
         for (final url in realisticUrls) {
@@ -280,7 +280,7 @@ void main() {
 
           const cdnUrl = 'https://gleecbtc.github.io/coins';
           const originalGitHubUrl =
-              'https://raw.githubusercontent.com/GLEECBTC/coins';
+              'https://raw.githubusercontent.com/niftAI/coins';
 
           // Test with CDN URL (what should happen when CDN mirrors are configured)
           final downloaderWithCDN = GitHubFileDownloader(
@@ -331,12 +331,12 @@ void main() {
           },
           {
             'scenario': 'Feature branch without CDN',
-            'contentUrl': 'https://raw.githubusercontent.com/GLEECBTC/coins',
+            'contentUrl': 'https://raw.githubusercontent.com/niftAI/coins',
             'description': 'Feature branches falling back to GitHub raw',
           },
           {
             'scenario': 'Custom jsDelivr CDN',
-            'contentUrl': 'https://cdn.jsdelivr.net/gh/GLEECBTC/coins@master',
+            'contentUrl': 'https://cdn.jsdelivr.net/gh/niftAI/coins@master',
             'description': 'Alternative CDN provider for coin assets',
           },
         ];
@@ -369,7 +369,7 @@ void main() {
         // BuildConfig -> effectiveContentUrl -> GitHubFileDownloader -> CDN URLs
 
         const originalContentUrl =
-            'https://raw.githubusercontent.com/GLEECBTC/coins';
+            'https://raw.githubusercontent.com/niftAI/coins';
         const cdnMirrorUrl = 'https://gleecbtc.github.io/coins';
 
         // When GitHubFileDownloader receives the effective content URL,

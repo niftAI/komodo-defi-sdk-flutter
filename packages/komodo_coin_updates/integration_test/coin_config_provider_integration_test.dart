@@ -161,14 +161,14 @@ void main() {
     group('GithubCoinConfigProvider Integration', () {
       test('fetches and parses configuration from GitHub API', () async {
         final mockResponses = {
-          'https://api.github.com/repos/GLEECBTC/coins/branches/master':
+          'https://api.github.com/repos/niftAI/coins/branches/master':
               http.Response(
                 jsonEncode({
                   'commit': {'sha': 'abc123def456'},
                 }),
                 200,
               ),
-          'https://raw.githubusercontent.com/GLEECBTC/coins/master/utils/coins_config_unfiltered.json':
+          'https://raw.githubusercontent.com/niftAI/coins/master/utils/coins_config_unfiltered.json':
               http.Response(
                 jsonEncode({
                   'KMD': {
@@ -190,9 +190,9 @@ void main() {
         final provider = GithubCoinConfigProvider(
           branch: 'master',
           coinsGithubContentUrl:
-              'https://raw.githubusercontent.com/GLEECBTC/coins',
+              'https://raw.githubusercontent.com/niftAI/coins',
           coinsGithubApiUrl:
-              'https://api.github.com/repos/GLEECBTC/coins',
+              'https://api.github.com/repos/niftAI/coins',
           coinsPath: 'coins',
           coinsConfigPath: 'utils/coins_config_unfiltered.json',
           httpClient: httpClient,
@@ -208,7 +208,7 @@ void main() {
 
       test('handles HTTP errors gracefully', () async {
         final mockResponses = {
-          'https://api.github.com/repos/GLEECBTC/coins/branches/master':
+          'https://api.github.com/repos/niftAI/coins/branches/master':
               http.Response('Not Found', 404),
         };
 
@@ -217,9 +217,9 @@ void main() {
         final provider = GithubCoinConfigProvider(
           branch: 'master',
           coinsGithubContentUrl:
-              'https://raw.githubusercontent.com/GLEECBTC/coins',
+              'https://raw.githubusercontent.com/niftAI/coins',
           coinsGithubApiUrl:
-              'https://api.github.com/repos/GLEECBTC/coins',
+              'https://api.github.com/repos/niftAI/coins',
           coinsPath: 'coins',
           coinsConfigPath: 'utils/coins_config_unfiltered.json',
           httpClient: httpClient,
@@ -232,9 +232,9 @@ void main() {
         final provider = GithubCoinConfigProvider(
           branch: 'master',
           coinsGithubContentUrl:
-              'https://raw.githubusercontent.com/GLEECBTC/coins',
+              'https://raw.githubusercontent.com/niftAI/coins',
           coinsGithubApiUrl:
-              'https://api.github.com/repos/GLEECBTC/coins',
+              'https://api.github.com/repos/niftAI/coins',
           coinsPath: 'coins',
           coinsConfigPath: 'utils/coins_config_unfiltered.json',
           cdnBranchMirrors: const {
@@ -253,9 +253,9 @@ void main() {
         final provider = GithubCoinConfigProvider(
           branch: 'dev',
           coinsGithubContentUrl:
-              'https://raw.githubusercontent.com/GLEECBTC/coins',
+              'https://raw.githubusercontent.com/niftAI/coins',
           coinsGithubApiUrl:
-              'https://api.github.com/repos/GLEECBTC/coins',
+              'https://api.github.com/repos/niftAI/coins',
           coinsPath: 'coins',
           coinsConfigPath: 'utils/coins_config_unfiltered.json',
           cdnBranchMirrors: const {

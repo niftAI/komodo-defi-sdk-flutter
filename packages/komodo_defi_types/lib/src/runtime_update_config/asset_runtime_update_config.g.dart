@@ -15,10 +15,10 @@ _AssetRuntimeUpdateConfig _$AssetRuntimeUpdateConfigFromJson(
       json['bundled_coins_repo_commit'] as String? ?? 'master',
   coinsRepoApiUrl:
       json['coins_repo_api_url'] as String? ??
-      'https://api.github.com/repos/GLEECBTC/coins',
+      'https://api.github.com/repos/niftAI/coins',
   coinsRepoContentUrl:
       json['coins_repo_content_url'] as String? ??
-      'https://raw.githubusercontent.com/GLEECBTC/coins',
+      'https://raw.githubusercontent.com/niftAI/coins',
   coinsRepoBranch: json['coins_repo_branch'] as String? ?? 'master',
   runtimeUpdatesEnabled: json['runtime_updates_enabled'] as bool? ?? true,
   mappedFiles:
