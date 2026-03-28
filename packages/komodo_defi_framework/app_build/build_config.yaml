@@ -1,6 +1,6 @@
 # yaml-language-server: $schema/build_config.schema.json
 
-# NB! This file is not currently used, but we will transition to using it in favour of the JSON config
+#  NB! This file is not currently used, but we will transition to using it in favour of the JSON config
 
 api:
   api_commit_hash: "b0fd99e8406e67ea06435dd028991caa5f522b5c"
