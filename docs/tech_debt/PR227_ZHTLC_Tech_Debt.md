@@ -1,7 +1,7 @@
 # Tech Debt: PR #227 – ZHTLC Activation Fixes
 
 Date: 2025-10-02  
-PR: https://github.com/GLEECBTC/komodo-defi-sdk-flutter/pull/227  
+PR: https://github.com/niftAI/komodo-defi-sdk-flutter/pull/227  
 Head commit: 1af4278
 
 This document compiles AI review findings into actionable tech-debt items with severity, impact, and recommended fixes. Items are grouped by concern.

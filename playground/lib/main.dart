@@ -732,7 +732,7 @@ class _MyAppState extends State<MyApp> {
                 icon: const Icon(Icons.code),
                 onPressed: () {
                   launchUrlString(
-                    'https://github.com/GLEECBTC/komodo-defi-sdk-flutter/tree/dev',
+                    'https://github.com/niftAI/komodo-defi-sdk-flutter/tree/dev',
                   );
                 },
               ),

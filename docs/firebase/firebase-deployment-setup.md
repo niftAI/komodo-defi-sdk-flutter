@@ -144,11 +144,11 @@ gh auth login
 # Create secrets
 gh secret set FIREBASE_SERVICE_ACCOUNT_GLEEC_DEFI_SDK \
     < gleec-defi-sdk-key.json \
-    --repo GLEECBTC/komodo-defi-sdk-flutter
+    --repo niftAI/komodo-defi-sdk-flutter
 
 gh secret set FIREBASE_SERVICE_ACCOUNT_GLEEC_SDK_PLAYGROUND \
     < gleec-sdk-playground-key.json \
-    --repo GLEECBTC/komodo-defi-sdk-flutter
+    --repo niftAI/komodo-defi-sdk-flutter
 ```
 
 ### Step 6: Clean Up Key Files
@@ -213,7 +213,7 @@ gcloud projects get-iam-policy gleec-sdk-playground
 List GitHub secrets:
 
 ```bash
-gh secret list --repo GLEECBTC/komodo-defi-sdk-flutter
+gh secret list --repo niftAI/komodo-defi-sdk-flutter
 ```
 
 ## Security Best Practices
