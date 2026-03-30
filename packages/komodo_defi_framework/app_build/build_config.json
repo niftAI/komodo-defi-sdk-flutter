@@ -71,7 +71,7 @@
         "bundled_coins_repo_commit": "b8f85666325ca1cc6306ca113e7129d73e77e0f0",
         "coins_repo_api_url": "https://api.github.com/repos/niftAI/coins",
         "coins_repo_content_url": "https://raw.githubusercontent.com/niftAI/coins",
-        "coins_repo_branch": "x1",
+        "coins_repo_branch": "master",
         "runtime_updates_enabled": true,
         "mapped_files": {
             "assets/config/coins_config.json": "utils/coins_config_unfiltered.json",
